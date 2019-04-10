@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
@@ -16,6 +17,10 @@ public class Rocket : MonoBehaviour
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float thrustPower = 100f;
     // Start is called before the first frame update
+
+    enum State {Alive, Dying, Trasending};
+    State state = State.Alive;
+
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
@@ -25,8 +30,12 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Thrust();
-        Rotate();
+        //todo stop sound on death
+        if(state == State.Alive)
+        {
+            Thrust();
+            Rotate();
+        }
     }
 
     void Rotate()
@@ -37,9 +46,9 @@ public class Rocket : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            print("rcsThrust: "+ rcsThrust + " - Time.deltaTime: " + Time.deltaTime);
-            print("rotationThisFrame: " + rotationThisFrame);
-            print("transform.Rotate: " + Vector3.forward * rotationThisFrame);
+            // print("rcsThrust: "+ rcsThrust + " - Time.deltaTime: " + Time.deltaTime);
+            // print("rotationThisFrame: " + rotationThisFrame);
+            // print("transform.Rotate: " + Vector3.forward * rotationThisFrame);
             transform.Rotate(Vector3.forward * rotationThisFrame);
         }
 
@@ -58,7 +67,7 @@ public class Rocket : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Space))
         {
-            print("Thrusting");
+          //  print("Thrusting");
             rigidbody.AddRelativeForce(Vector3.up * thrustPower);
 
 
@@ -75,23 +84,41 @@ public class Rocket : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        print("Collision");
+        //print("Collision");
+
+        if (state != State.Alive)
+            return;
 
         switch(collision.gameObject.tag)
         {
             case "Friendly":
                 print("OK");
                 break;
-            case "Platform":
-                print("OK");
-                break;
-            case "Ground":
-                print("Dead");
+            case "finish":
+                //  print("Hit finish");
+                state = State.Trasending;
+              //Loads the method passed as a string param
+              //After one second '1f'
+                Invoke("LoadNextScene", 1f);
                 break;
             default:
-                print("Dead");
+                print("Hit something deadly");
+                state = State.Dying;
+                //Loads the method passed as a string param
+                //After one second '1f'
+                Invoke("LoadFirstLevel", 1f);
                 break;
         }
 
+    }
+
+    private void LoadNextLevel()
+    {
+        SceneManager.LoadScene(1); // The number is the index of the scene
+    }
+
+    private void LoadFirstLevel()
+    {
+        SceneManager.LoadScene(0); // The number is the index of the scene
     }
 }
