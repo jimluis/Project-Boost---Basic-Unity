@@ -1546,6 +1546,10 @@ PrefabInstance:
       propertyPath: Loop
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 853019300, guid: 281f8b97ee2e741768b8e9f9e447cb3c, type: 3}
+      propertyPath: m_Volume
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 853019299, guid: 281f8b97ee2e741768b8e9f9e447cb3c, type: 3}
       propertyPath: rcsThrust
       value: 100

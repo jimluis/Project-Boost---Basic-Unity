@@ -7,16 +7,20 @@ using UnityEngine.SceneManagement;
 public class Rocket : MonoBehaviour
 {
 
-    Rigidbody rigidbody;
-    AudioSource audioSource;
-    bool isAudioPlaying = false;
     // [SerializeField] makes the variable as a member variable, and it acts as public, 
     // it can be accessed from the inspector, but
     // the only difference is that this variable can not be
     // modified from other scripts 
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float thrustPower = 100f;
-    // Start is called before the first frame update
+    [SerializeField] AudioClip mainEngineSound;
+    [SerializeField] AudioClip deadSound;
+    [SerializeField] AudioClip nextLevelSound;
+
+    Rigidbody rigidbody;
+    AudioSource audioSource;
+    bool isAudioPlaying = false;
+
 
     enum State {Alive, Dying, Trasending};
     State state = State.Alive;
@@ -33,12 +37,12 @@ public class Rocket : MonoBehaviour
         //todo stop sound on death
         if(state == State.Alive)
         {
-            Thrust();
-            Rotate();
+            RespondToThrustInput();
+            RespondToRotateInput();
         }
     }
 
-    void Rotate()
+    void RespondToRotateInput()
     {
         rigidbody.freezeRotation = true; // Take manual control of rotatio
         float rotationThisFrame = rcsThrust * Time.deltaTime; //Time frame independent
@@ -60,27 +64,33 @@ public class Rocket : MonoBehaviour
         rigidbody.freezeRotation = false; // resumes physics control of rotation
     }
 
-    void Thrust()
+    void RespondToThrustInput()
     {
 
         //float tPower = thrustPower * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.Space))
         {
-          //  print("Thrusting");
-            rigidbody.AddRelativeForce(Vector3.up * thrustPower);
-
-
-            if (!audioSource.isPlaying)
-                audioSource.Play();
-
+            //  print("Thrusting");
+            ApplyingThrust();
         }
         else
         {
+            print("Thrust sound stopped");
             audioSource.Stop();
         }
     }
 
+    private void ApplyingThrust()
+    {
+        rigidbody.AddRelativeForce(Vector3.up * thrustPower);
+
+        if (!audioSource.isPlaying)
+        {
+            print("Thrust sound playing");
+            audioSource.PlayOneShot(mainEngineSound);
+        }
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -95,21 +105,36 @@ public class Rocket : MonoBehaviour
                 print("OK");
                 break;
             case "finish":
-                //  print("Hit finish");
-                state = State.Trasending;
-              //Loads the method passed as a string param
-              //After one second '1f'
-                Invoke("LoadNextScene", 1f);
+                StartSuccessSequence();
                 break;
             default:
-                print("Hit something deadly");
-                state = State.Dying;
-                //Loads the method passed as a string param
-                //After one second '1f'
-                Invoke("LoadFirstLevel", 1f);
+                StartDeathSequence();
                 break;
         }
 
+    }
+
+    private void StartDeathSequence()
+    {
+        print("Hit something deadly");
+        state = State.Dying;
+        audioSource.Stop();
+        audioSource.PlayOneShot(deadSound);
+        //Loads the method passed as a string param
+        //After one second '1f'
+        Invoke("LoadFirstLevel", 1f);
+    }
+
+    private void StartSuccessSequence()
+    {
+        //  print("Hit finish");
+        state = State.Trasending;
+        audioSource.Stop();
+        audioSource.PlayOneShot(nextLevelSound);
+
+        //Loads the method passed as a string param
+        //After one second '1f'
+        Invoke("LoadNextLevel", 1f);
     }
 
     private void LoadNextLevel()
