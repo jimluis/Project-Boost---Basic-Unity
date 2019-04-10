@@ -17,6 +17,10 @@ public class Rocket : MonoBehaviour
     [SerializeField] AudioClip deadSound;
     [SerializeField] AudioClip nextLevelSound;
 
+    [SerializeField] ParticleSystem mainEngineParticles;
+    [SerializeField] ParticleSystem deadSoundParticles;
+    [SerializeField] ParticleSystem nextLevelSoundParticles;
+
     Rigidbody rigidbody;
     AudioSource audioSource;
     bool isAudioPlaying = false;
@@ -78,6 +82,7 @@ public class Rocket : MonoBehaviour
         {
             print("Thrust sound stopped");
             audioSource.Stop();
+            mainEngineParticles.Stop();
         }
     }
 
@@ -90,6 +95,8 @@ public class Rocket : MonoBehaviour
             print("Thrust sound playing");
             audioSource.PlayOneShot(mainEngineSound);
         }
+
+        mainEngineParticles.Play();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -120,6 +127,7 @@ public class Rocket : MonoBehaviour
         state = State.Dying;
         audioSource.Stop();
         audioSource.PlayOneShot(deadSound);
+        deadSoundParticles.Play();
         //Loads the method passed as a string param
         //After one second '1f'
         Invoke("LoadFirstLevel", 1f);
@@ -131,7 +139,7 @@ public class Rocket : MonoBehaviour
         state = State.Trasending;
         audioSource.Stop();
         audioSource.PlayOneShot(nextLevelSound);
-
+        nextLevelSoundParticles.Play();
         //Loads the method passed as a string param
         //After one second '1f'
         Invoke("LoadNextLevel", 1f);
