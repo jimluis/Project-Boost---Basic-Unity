@@ -80,7 +80,7 @@ public class Rocket : MonoBehaviour
         }
         else
         {
-            print("Thrust sound stopped");
+            //print("Thrust sound stopped");
             audioSource.Stop();
             mainEngineParticles.Stop();
         }
@@ -92,7 +92,7 @@ public class Rocket : MonoBehaviour
 
         if (!audioSource.isPlaying)
         {
-            print("Thrust sound playing");
+            //print("Thrust sound playing");
             audioSource.PlayOneShot(mainEngineSound);
         }
 
@@ -109,7 +109,7 @@ public class Rocket : MonoBehaviour
         switch(collision.gameObject.tag)
         {
             case "Friendly":
-                print("OK");
+                // print("OK");
                 break;
             case "finish":
                 StartSuccessSequence();
@@ -123,7 +123,7 @@ public class Rocket : MonoBehaviour
 
     private void StartDeathSequence()
     {
-        print("Hit something deadly");
+        //print("Hit something deadly");
         state = State.Dying;
         audioSource.Stop();
         audioSource.PlayOneShot(deadSound);
