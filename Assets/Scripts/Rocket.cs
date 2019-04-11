@@ -11,6 +11,7 @@ public class Rocket : MonoBehaviour
     // it can be accessed from the inspector, but
     // the only difference is that this variable can not be
     // modified from other scripts 
+    [SerializeField] float levelLoadTime = 1f;
     [SerializeField] float rcsThrust = 100f;
     [SerializeField] float thrustPower = 100f;
     [SerializeField] AudioClip mainEngineSound;
@@ -130,7 +131,7 @@ public class Rocket : MonoBehaviour
         deadSoundParticles.Play();
         //Loads the method passed as a string param
         //After one second '1f'
-        Invoke("LoadFirstLevel", 1f);
+        Invoke("LoadFirstLevel", levelLoadTime);
     }
 
     private void StartSuccessSequence()
@@ -142,7 +143,7 @@ public class Rocket : MonoBehaviour
         nextLevelSoundParticles.Play();
         //Loads the method passed as a string param
         //After one second '1f'
-        Invoke("LoadNextLevel", 1f);
+        Invoke("LoadNextLevel", levelLoadTime);
     }
 
     private void LoadNextLevel()

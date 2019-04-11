@@ -9,7 +9,7 @@ public class Oscillator : MonoBehaviour
     [SerializeField] Vector3 movementVector = new Vector3(10f, 10f, 10f);
 
     //todo remove from inspector later
-    [Range(0,1)][SerializeField] float movementFactor; // 0 for not moved, 1 for fully moved
+    float movementFactor; // 0 for not moved, 1 for fully moved
     Vector3 startingPos;
     [SerializeField] float period = 2f; // the period is the time to complete one full cycle
     const float tau = Mathf.PI * 2f; //Tau is 2 Pi (a circle), so this is about 6.28 
@@ -24,20 +24,19 @@ public class Oscillator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(period >= Mathf.Epsilon)
+        {
+            float playTime = Time.time; // Time.time - Time since the beginning of the game
+                                        //If the playTime is 10 and the period is 2 then that will be 5 cycles
+            float cycles = playTime / period; //Grows continually from 0
+            print("cycles: " + cycles);
+            float rawSinWave = Mathf.Sin(cycles * tau);
+            //print("rawSinWave: " + rawSinWave);
 
-        float playTime = Time.time; // Time.time - Time since the beginning of the game
-        //If the playTime is 10 and the period is 2 then that will be 5 cycles
-        float cycles = playTime / period; //Grows continually from 0
-        print("cycles: " + cycles);
-        float rawSinWave = Mathf.Sin(cycles * tau);
-        //print("rawSinWave: " + rawSinWave);
+            movementFactor = rawSinWave / 2f + 0.5f;
+            Vector3 offset = movementVector * movementFactor;
+            transform.position = startingPos + offset;
+        }
 
-        movementFactor = rawSinWave / 2f + 0.5f;
-        //set movement factor
-        //print("movementVector: " + movementVector+ " - movementFactor: " + movementFactor);
-        Vector3 offset = movementVector * movementFactor;
-        //print("offset: " + movementVector * movementFactor);
-        //print("position: " + startingPos + offset);
-        transform.position = startingPos + offset;
     }
 }
