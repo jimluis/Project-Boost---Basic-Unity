@@ -25,7 +25,7 @@ public class Rocket : MonoBehaviour
     Rigidbody rigidbody;
     AudioSource audioSource;
     bool isAudioPlaying = false;
-
+    [SerializeField]  bool collisionsDisabled = false;
 
     enum State {Alive, Dying, Trasending};
     State state = State.Alive;
@@ -40,10 +40,29 @@ public class Rocket : MonoBehaviour
     void Update()
     {
         //todo stop sound on death
-        if(state == State.Alive)
+        if (state == State.Alive)
         {
+
+
             RespondToThrustInput();
             RespondToRotateInput();
+        }
+
+        //Allows the debug logic to work only when doing a development build
+        if(Debug.isDebugBuild)
+            RespondToDebugKeys();
+
+    }
+
+    private void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+            LoadNextLevel();
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            //toggle collision
+            collisionsDisabled = !collisionsDisabled;
         }
     }
 
@@ -104,7 +123,7 @@ public class Rocket : MonoBehaviour
     {
         //print("Collision");
 
-        if (state != State.Alive)
+        if (state != State.Alive || collisionsDisabled)
             return;
 
         switch(collision.gameObject.tag)
@@ -148,7 +167,13 @@ public class Rocket : MonoBehaviour
 
     private void LoadNextLevel()
     {
-        SceneManager.LoadScene(1); // The number is the index of the scene
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+            nextSceneIndex = 0;
+
+        SceneManager.LoadScene(nextSceneIndex); // The number is the index of the scene
     }
 
     private void LoadFirstLevel()
