@@ -29,7 +29,7 @@ public class Oscillator : MonoBehaviour
             float playTime = Time.time; // Time.time - Time since the beginning of the game
                                         //If the playTime is 10 and the period is 2 then that will be 5 cycles
             float cycles = playTime / period; //Grows continually from 0
-            print("cycles: " + cycles);
+            //print("cycles: " + cycles);
             float rawSinWave = Mathf.Sin(cycles * tau);
             //print("rawSinWave: " + rawSinWave);
 
